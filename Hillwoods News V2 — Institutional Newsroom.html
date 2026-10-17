@@ -1,0 +1,127 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Hillwoods News V2 — Institutional Newsroom</title>
+<style>
+:root{--bg:#f6f4ef;--sf:#fff;--tx:#1d2420;--mu:#5b665f;--ac:#1f5f46;--ac2:#b4541a;--bd:#d9d5ca;--wr:#fff3cd;--box-sizing:border-box;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#14181a;--sf:#1d2326;--tx:#e8ece9;--mu:#9fb0a7;--ac:#6fcf9f;--ac2:#f0a070;--bd:#33403a;--wr:#4a3f14}}
+:root[data-theme=dark]{--bg:#14181a;--sf:#1d2326;--tx:#e8ece9;--mu:#9fb0a7;--ac:#6fcf9f;--ac2:#f0a070;--bd:#33403a;--wr:#4a3f14}
+html{color-scheme:light dark}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 Georgia,'Times New Roman',serif}
+h1,h2,h3,button,input,select,textarea,nav,.m{font-family:system-ui,-apple-system,Segoe UI,sans-serif}
+header{background:var(--ac);color:#fff;padding:.7rem 1rem;display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;justify-content:space-between}
+header b{font-size:1.25rem}header select{padding:.3rem}
+nav{display:flex;flex-wrap:wrap;gap:.3rem;padding:.5rem 1rem;background:var(--sf);border-bottom:1px solid var(--bd)}
+nav button{border:0;background:none;color:var(--tx);padding:.45rem .7rem;border-radius:6px;cursor:pointer;font-size:.9rem}nav button[aria-current=page]{background:var(--ac);color:#fff}
+main{max-width:1000px;margin:0 auto;padding:1rem}.grid{display:grid;gap:.8rem;grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
+.card{background:var(--sf);border:1px solid var(--bd);border-radius:8px;padding:.8rem}.card h3{margin:.2rem 0;font-size:1.05rem}
+.m{color:var(--mu);font-size:.82rem}.tag{display:inline-block;font-size:.72rem;padding:.1rem .5rem;border-radius:99px;border:1px solid var(--ac);color:var(--ac);margin-right:.3rem}
+.tag.w{border-color:var(--ac2);color:var(--ac2)}.sim{background:var(--wr);padding:.4rem .7rem;border-radius:6px;font:.82rem system-ui;margin:.5rem 0}
+button.b,a.l{background:var(--ac);color:#fff;border:0;padding:.45rem .8rem;border-radius:6px;cursor:pointer;font-size:.85rem;margin:.15rem .15rem .15rem 0}button.s{background:none;color:var(--ac);border:1px solid var(--ac)}button:disabled{opacity:.45;cursor:not-allowed}
+a.t{color:var(--ac);cursor:pointer;text-decoration:underline;background:none;border:0;padding:0;font:inherit;text-align:left}
+input,select,textarea{width:100%;padding:.5rem;border:1px solid var(--bd);border-radius:6px;background:var(--bg);color:var(--tx);font-size:.95rem}label{display:block;font:600 .85rem system-ui;margin:.6rem 0 .2rem}
+.row{display:flex;gap:.5rem;flex-wrap:wrap}.row>*{flex:1;min-width:140px}.err{color:#b00020;font:600 .85rem system-ui}.ok{color:var(--ac);font:600 .85rem system-ui}
+.hero{border-left:5px solid var(--ac2)}table{width:100%;border-collapse:collapse;font:.85rem system-ui}td,th{border-bottom:1px solid var(--bd);padding:.4rem;text-align:left}.sc{overflow-x:auto}
+:focus-visible{outline:3px solid var(--ac2);outline-offset:2px}h2{margin:.4rem 0}
+</style></head><body>
+<header><b>Hillwoods News V2</b><span class="m" style="color:#fff">Fictional school · synthetic data · demo</span>
+<label style="margin:0;color:#fff">Role <select id="role" aria-label="Role"></select></label></header>
+<nav id="nav" aria-label="Main"></nav><main id="app" tabindex="-1"></main>
+<footer class="m" style="text-align:center;padding:1rem">Sim date: <span id="sd"></span> <button class="b s" onclick="A('adv')">Advance 1 day (runs scheduler)</button> <button class="b s" onclick="A('reset')">Reset to seed data</button><br>All data is fictional and stored in this browser’s localStorage only — not a secure database or tamper-proof audit trail.</footer>
+<script>
+const KEY='hwnews2',CATS=['Sports','Science','Culture','Innovation','Campus','Achievements'],ROLES={public:'Public reader',contrib:'Contributor (Aarav Mehta)',review:'Reviewer (Ms. Iyer)',pub:'Publisher (Mr. Khanna)',prin:'Principal (Dr. Sethi)'};
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let S,role='public',view='home',arg=null,msg='';
+function seed(){const raw=`Sports|Under-16 Football Team Wins District Cup|Meera Nair|p|2026-10-12
+Sports|Swimming Squad Breaks Two School Records|Kabir Rao|p|2026-10-08
+Sports|Inter-House Athletics Meet Opens Season|Tara Singh|p|2026-09-28
+Science|Class 11 Team Maps Air Quality With Low-Cost Sensors|Ishaan Gupta|p|2026-10-10
+Science|Physics Olympiad Selections Announced|Anaya Verma|p|2026-10-03
+Science|Biology Club Surveys Campus Pollinators|Rhea Das|p|2026-09-20
+Culture|Annual Day Rehearsals Begin With Folk Theme|Meera Nair|p|2026-10-14
+Culture|Debate Society Hosts Inter-School Parliament|Kabir Rao|p|2026-10-05
+Culture|Library Week Brings Authors to Campus|Tara Singh|p|2026-09-15
+Innovation|Robotics Club Demonstrates Line-Following Rover|Ishaan Gupta|p|2026-10-11
+Innovation|Student Coders Launch Timetable Helper (Prototype)|Anaya Verma|p|2026-10-01
+Innovation|Maker Lab Open Day Draws Parents|Rhea Das|p|2026-08-30
+Campus|Revised Assembly Schedule Announced|Newsroom Desk|p|2026-10-15
+Campus|Canteen Menu Updated After Student Survey|Tara Singh|p|2026-09-25
+Campus|Scholarship Information Session Held|Newsroom Desk|p|2025-06-12
+Achievements|Student Wins State Essay Prize|Meera Nair|p|2025-11-20
+Achievements|Chess Team Reaches Regional Finals|Kabir Rao|c|2026-10-09
+Science|Planetarium Visit Report|Aarav Mehta|d|2026-10-16
+Culture|Poetry Slam Preview|Aarav Mehta|r|2026-10-16
+Sports|Unverified Cricket Record Claim|Tara Singh|x|2026-10-13
+Innovation|Hackathon Results|Anaya Verma|s|2026-10-20`.split('\n');
+const ST={p:'published',c:'published',d:'draft',r:'review',x:'rejected',s:'scheduled'};
+const A=raw.map((l,i)=>{const[c,t,a,s,d]=l.split('|');const o={id:'ART-'+(100+i),t,cat:c,au:a,st:ST[s],d,views:(i*37)%90+10,photo:i%4==0?'pending':'granted',body:`${t}. Students, teachers and families gathered on campus this term for the ${c.toLowerCase()} programme. Organisers said participation was the highest in three years, and staff credited volunteers for planning. The newsroom confirmed details with the activity coordinator before filing this report. (Fictional demo text.)`,hist:[{ts:d,by:a,act:'Created',note:'Initial draft'}],corr:[]};
+if(o.st=='published')o.hist.push({ts:d,by:'Mr. Khanna',act:'Published',note:'Approved by publisher'});
+if(s=='c'){o.corr.push({ts:'2026-10-14',note:'Corrected: team reached the regional (not national) finals.'});o.hist.push({ts:'2026-10-14',by:'Mr. Khanna',act:'Correction',note:'Regional vs national finals'})}
+if(s=='x'){o.hist.push({ts:d,by:'Ms. Iyer',act:'Rejected',note:'Record claim lacks evidence'})}
+if(s=='s')o.pubAt=d;return o});
+A[16].photo='granted';A[18].st='review';
+const ach=[['State Essay Prize','2025-26','Essay Contest','Individual','verified','Meera Nair','Certificate scan (synthetic) EV-01'],['District Football Cup','2026-27','Football','Team','verified','U16 Football','Match sheet EV-02'],['Swimming School Record 50m','2026-27','Aquatics','Individual','verified','Kabir Rao','Timing log EV-03'],['Regional Chess Finalists','2026-27','Chess','Team','verified','Chess Team','Organiser list EV-04'],['National Chess Finalists (claimed)','2026-27','Chess','Team','rejected','Chess Team','Claim contradicted by organiser list'],['Olympiad Selection','2026-27','Physics Olympiad','Individual','pending','Anaya Verma','Awaiting letter'],['Air Quality Project Award','2026-27','Science Fair','Team','verified','Class 11 Team','Judges’ sheet EV-07'],['Cricket Record (claimed)','2026-27','Cricket','Individual','rejected','Unnamed','No scorebook provided'],['Debate Best Speaker','2025-26','Debate','Individual','verified','Kabir Rao','Result sheet EV-09'],['Robotics Rover Demo Prize','2026-27','Robotics','Team','pending','Robotics Club','Judge confirmation pending'],['Inter-House Athletics Champions','2026-27','Athletics','Team','verified','Tagore House','Scoreboard EV-11'],['Poetry Slam Finalist','2025-26','Poetry Slam','Individual','pending','Rhea Das','Awaiting organiser email']].map((a,i)=>({id:'ACH-'+(1+i),t:a[0],yr:a[1],ev:a[2],kind:a[3],st:a[4],who:a[5],evd:a[6]}));
+const ev=[['Annual Day','2026-12-05',400,380,'Culture'],['Science Fair','2026-11-10',150,148,'Science'],['Inter-School Quiz','2026-11-02',60,20,'Campus'],['Robotics Showcase','2026-10-25',80,80,'Innovation'],['District Football Cup Final','2026-10-10',50,50,'Sports'],['Debate Parliament','2026-10-04',90,70,'Culture'],['Library Week','2026-09-14',200,150,'Culture'],['Maker Lab Open Day','2026-08-29',120,95,'Innovation']].map((e,i)=>({id:'EVT-'+(1+i),t:e[0],d:e[1],cap:e[2],reg:e[3],cat:e[4],names:[],report:i>=4?(i==4?'Final won 2–1 after extra time (fictional).':''):''}));
+const notices=[['Annual Day rehearsal timings','All classes','2026-12-05',1,'approved'],['Exam fee deadline','Class 10–12','2026-10-10',0,'approved'],['Parent–teacher meeting slots','Parents','2026-11-01',1,'pending'],['Bus route change','Transport users','2026-10-30',0,'pending'],['Library fine amnesty','All students','2026-10-20',0,'approved']].map((n,i)=>({id:'NTC-'+(1+i),t:n[0],aud:n[1],exp:n[2],pin:!!n[3],st:n[4]}));
+return{today:'2026-10-17',A,ach,ev,notices,audit:[{ts:'2026-10-17',by:'system',act:'Seed loaded',note:'Synthetic data'}],nl:[]}}
+function load(){try{return JSON.parse(localStorage.getItem(KEY))}catch(e){return null}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+S=load()||seed();
+const log=(act,note)=>S.audit.unshift({ts:S.today,by:ROLES[role].split(' (')[0],act,note});
+const vis=a=>a.st=='published'||(role=='contrib'&&a.au=='Aarav Mehta')||role=='review'||role=='pub';
+const pubs=()=>S.A.filter(a=>a.st=='published').sort((a,b)=>b.d.localeCompare(a.d));
+const go=(v,a)=>{view=v;arg=a??null;msg='';draw()};
+const art=id=>S.A.find(a=>a.id==id);
+const NAV=()=>{const n=[['home','Home'],['search','Search'],['ach','Achievements'],['events','Events'],['notices','Notices'],['soon','Coming soon']];if(role=='contrib')n.push(['write','Write article'],['mine','My articles']);if(role=='review'||role=='pub')n.push(['queue','Editorial queue']);if(role!='public')n.push(['audit','Audit log']);return n};
+function card(a){return `<div class="card"><span class="tag">${esc(a.cat)}</span><h3><a class="t" onclick="go('art','${a.id}')">${esc(a.t)}</a></h3><div class="m">By ${esc(a.au)} · ${a.d}${a.corr.length?' · <b>Corrected</b>':''}</div></div>`}
+const V={
+home(){const p=pubs(),f=p[0],tr=[...p].sort((a,b)=>b.views-a.views).slice(0,4);
+return `<div class="card hero"><span class="tag w">Breaking / Featured</span><h2>${esc(f.t)}</h2><p>${esc(f.body.slice(0,160))}…</p><button class="b" onclick="go('art','${f.id}')">Read story</button></div>
+<h2>Trending</h2><div class="grid">${tr.map(card).join('')}</div>
+<h2>By category</h2>${CATS.map(c=>{const l=p.filter(a=>a.cat==c).slice(0,3);return `<h3>${c} <button class="b s" onclick="go('search',{cat:'${c}'})">All ${c}</button></h3><div class="grid">${l.map(card).join('')||'<p class=m>No published stories yet.</p>'}</div>`}).join('')}
+<h2>Newsletter <span class="tag w">DEMONSTRATION</span></h2><div class="card"><div class="row"><input id="nlm" type="email" placeholder="email (no real sending)" aria-label="Email"><button class="b" style="flex:0" onclick="A('nl')">Subscribe</button></div><div class="m">${S.nl.length} demo subscribers. No email is sent.</div><div class="err" id="nle"></div></div>
+<div class="card" style="margin-top:.8rem"><span class="tag w">Sponsor</span> Sample Stationers (fictional) — sponsored placement, not editorial content.</div>`},
+search(){const q=arg||{};const r=pubs().filter(a=>(!q.cat||a.cat==q.cat)&&(!q.q||(a.t+a.body+a.au).toLowerCase().includes(q.q.toLowerCase()))&&(q.arch||a.d>='2026-01-01'));
+return `<h2>Newsroom search</h2><div class="row"><input id="sq" value="${esc(q.q||'')}" placeholder="Search title, text, author" aria-label="Search"><select id="sc" aria-label="Category"><option value="">All categories</option>${CATS.map(c=>`<option ${q.cat==c?'selected':''}>${c}</option>`).join('')}</select></div><label><input type="checkbox" id="sa" style="width:auto" ${q.arch?'checked':''}> Include archived (before 2026)</label><button class="b" onclick="A('search')">Search</button><p class="m">${r.length} result(s)</p><div class="grid">${r.map(card).join('')}</div>${r.length?'':'<p>No matching published stories. Drafts and unpublished items are never searchable.</p>'}`},
+art(){const a=art(arg);if(!a||!vis(a))return `<p class="err">Article not found or not available to your role.</p>`;
+const pc=a.photo=='granted'?'<span class="tag">Photo consent: granted (simulated record)</span>':'<span class="tag w">Photo consent: pending — photo withheld</span>';
+return `<button class="b s" onclick="go('home')">← Home</button><h2>${esc(a.t)}</h2><div class="m"><span class="tag">${a.cat}</span><span class="tag ${a.st=='published'?'':'w'}">${a.st}</span> By <b>${esc(a.au)}</b> · ${a.d}</div><p>${esc(a.body)}</p><div class="m">${pc} · Credit: ${esc(a.au)} (writer), Newsroom Desk (edit)</div>
+${a.corr.map(c=>`<div class="sim"><b>Correction ${c.ts}:</b> ${esc(c.note)}</div>`).join('')}
+<h3>Change history</h3><div class="sc"><table><tr><th>Date</th><th>By</th><th>Action</th><th>Note</th></tr>${a.hist.map(h=>`<tr><td>${h.ts}</td><td>${esc(h.by)}</td><td>${esc(h.act)}</td><td>${esc(h.note)}</td></tr>`).join('')}</table></div>
+<h3>Related stories</h3><div class="grid">${pubs().filter(x=>x.cat==a.cat&&x.id!=a.id).slice(0,3).map(card).join('')||'<p class=m>None.</p>'}</div>
+${role=='pub'&&a.st=='published'?`<h3>Add correction</h3><textarea id="cn" rows=2 aria-label="Correction note"></textarea><button class="b" onclick="A('corr','${a.id}')">Publish correction</button>`:''}<div class="err">${msg}</div>`},
+ach(){const q=arg||{};const r=S.ach.filter(a=>(!q.yr||a.yr==q.yr)&&(!q.k||a.kind==q.k)&&(!q.st||a.st==q.st)&&(!q.ev||a.ev==q.ev)&&(!q.q||(a.t+a.who).toLowerCase().includes(q.q.toLowerCase())));
+const o=(id,l,vs,cur)=>`<select id="${id}" aria-label="${l}"><option value="">${l}: all</option>${vs.map(v=>`<option ${cur==v?'selected':''}>${v}</option>`).join('')}</select>`;
+return `<h2>Achievements registry</h2><div class="row"><input id="aq" value="${esc(q.q||'')}" placeholder="Search" aria-label="Search achievements">${o('ay','Year',['2025-26','2026-27'],q.yr)}${o('ae','Event',[...new Set(S.ach.map(a=>a.ev))],q.ev)}${o('ak','Type',['Individual','Team'],q.k)}${o('as','State',['verified','pending','rejected'],q.st)}</div><button class="b" onclick="A('ach')">Apply filters</button><div class="grid" style="margin-top:.6rem">${r.map(a=>`<div class="card"><span class="tag ${a.st=='verified'?'':'w'}">${a.st=='verified'?'Verified':a.st=='pending'?'Unverified — pending':'Claim rejected'}</span><h3>${esc(a.t)}</h3><div class="m">${a.yr} · ${esc(a.ev)} · ${a.kind} · ${esc(a.who)}<br>Evidence: ${esc(a.evd)}</div>${role=='review'&&a.st=='pending'?`<button class="b" onclick="A('verify','${a.id}')">Verify (needs evidence)</button><button class="b s" onclick="A('rej','${a.id}')">Reject claim</button>`:''}</div>`).join('')}</div>${r.length?'':'<p>No achievements match.</p>'}<div class="err">${msg}</div>`},
+events(){return `<h2>Events &amp; registrations</h2><div class="grid">${S.ev.map(e=>{const past=e.d<S.today;return `<div class="card"><span class="tag">${e.cat}</span><h3>${esc(e.t)}</h3><div class="m">${e.d} · ${e.reg}/${e.cap} registered${past?' · <b>Past</b>':''}</div>${past?`<p>${e.report?'<b>Report:</b> '+esc(e.report):'<span class=m>No post-event report yet.</span>'}</p>${role=='contrib'?`<input id="rp${e.id}" placeholder="Post-event report (min 30 chars)" aria-label="Report"><button class="b" onclick="A('rep','${e.id}')">Submit report</button>`:''}`:`<input id="rn${e.id}" placeholder="Student name" aria-label="Student name"><button class="b" onclick="A('regi','${e.id}')">${e.reg>=e.cap?'Join waitlist (disabled)':'Register'}</button>`}</div>`}).join('')}</div><div class="${msg.startsWith('OK')?'ok':'err'}">${msg}</div>`},
+notices(){const L=S.notices.filter(n=>(n.st=='approved'||role=='prin'||role=='pub')&&(n.exp>=S.today||role=='prin'||role=='pub')).sort((a,b)=>b.pin-a.pin);return `<h2>Notices</h2>${L.map(n=>`<div class="card" style="margin-bottom:.5rem">${n.pin?'<span class="tag">Pinned</span>':''}<span class="tag ${n.st=='approved'?'':'w'}">${n.st=='approved'?'Principal approved':'Awaiting principal approval'}</span>${n.exp<S.today?'<span class="tag w">Expired</span>':''}<h3>${esc(n.t)}</h3><div class="m">Audience: ${n.aud} · Expires ${n.exp}</div>${role=='prin'&&n.st=='pending'?`<button class="b" onclick="A('appr','${n.id}')">Approve</button>`:''}</div>`).join('')||'<p>No active notices.</p>'}<p class="m">Public readers only see approved, unexpired notices. Targeting is simulated.</p>`},
+soon(){return `<h2>Coming soon</h2><div class="grid">${[['Editorial Studio (02)','Concept'],['Academic Archive (03)','Concept'],['Provenance checks (18)','Concept'],['Media Studio (29)','Concept']].map(c=>`<div class="card"><span class="tag w">${c[1]}</span><h3>${c[0]}</h3><p class="m">Idea stage; no validated capability. Details withheld.</p></div>`).join('')}</div>`},
+write(){const a=arg&&art(arg);return `<h2>${a?'Revise':'New'} event article</h2><label>Title</label><input id="wt" value="${esc(a?a.t:'')}"><div class="row"><div><label>Category</label><select id="wc">${CATS.map(c=>`<option ${a&&a.cat==c?'selected':''}>${c}</option>`).join('')}</select></div><div><label>Student photo consent</label><select id="wp"><option value="granted">Granted (simulated record)</option><option value="pending">Pending</option></select></div></div><label>Body (min 80 characters)</label><textarea id="wb" rows=7>${esc(a?a.body:'')}</textarea><button class="b" onclick="A('sub','${a?a.id:''}')">Submit to editorial queue</button><div class="err" id="we">${msg}</div>`},
+mine(){const L=S.A.filter(a=>a.au=='Aarav Mehta');return `<h2>My articles</h2>${L.map(a=>`<div class="card" style="margin-bottom:.5rem"><span class="tag w">${a.st}</span> <a class="t" onclick="go('art','${a.id}')">${esc(a.t)}</a>${a.st=='changes'||a.st=='draft'?` <button class="b" onclick="go('write','${a.id}')">Revise</button>`:''}</div>`).join('')||'<p>Nothing yet.</p>'}`},
+queue(){const L=S.A.filter(a=>['review','recommended','changes','scheduled','rejected','draft'].includes(a.st));return `<h2>Editorial queue</h2><p class="m">Human reviewers and the publisher decide. Drafts are visible to editors only.</p><div class="err">${msg}</div>${L.map(a=>`<div class="card" style="margin-bottom:.5rem"><span class="tag w">${a.st}</span> <a class="t" onclick="go('art','${a.id}')">${esc(a.t)}</a> <span class="m">${esc(a.au)} · ${a.cat}</span>${a.st=='review'&&role=='review'?`<br><input id="rv${a.id}" placeholder="Review note" aria-label="Review note"><button class="b" onclick="A('chg','${a.id}')">Request corrections</button><button class="b s" onclick="A('rec','${a.id}')">Recommend</button><button class="b s" onclick="A('rejA','${a.id}')">Reject</button>`:''}${a.st=='recommended'&&role=='pub'?` <button class="b" onclick="A('pubA','${a.id}')">Approve &amp; publish</button>`:''}${a.st=='scheduled'?`<span class="m"> publishes ${a.pubAt}</span>`:''}</div>`).join('')||'<p>Queue empty.</p>'}`},
+audit(){return `<h2>Audit log <span class="tag w">demo, editable storage</span></h2><div class="sc"><table><tr><th>Date</th><th>By</th><th>Action</th><th>Note</th></tr>${S.audit.slice(0,60).map(h=>`<tr><td>${h.ts}</td><td>${esc(h.by)}</td><td>${esc(h.act)}</td><td>${esc(h.note)}</td></tr>`).join('')}</table></div>`}};
+const val=id=>(document.getElementById(id)||{}).value||'';
+function A(k,id){msg='';const g=a=>art(a);
+try{switch(k){
+case'reset':S=seed();role='public';view='home';break;
+case'adv':{const d=new Date(S.today+'T00:00');d.setDate(d.getDate()+1);S.today=d.toISOString().slice(0,10);S.A.forEach(a=>{if(a.st=='scheduled'&&a.pubAt<=S.today){a.st='published';a.d=S.today;a.hist.push({ts:S.today,by:'scheduler (sim)',act:'Published',note:'Scheduled publish'});log('Scheduled publish',a.id)}});break}
+case'nl':{const m=val('nlm');if(!/^\S+@\S+\.\S+$/.test(m)){document.getElementById('nle').textContent='Enter a valid email.';return}S.nl.push(m);break}
+case'search':view='search';arg={q:val('sq'),cat:val('sc'),arch:document.getElementById('sa').checked};break;
+case'ach':arg={q:val('aq'),yr:val('ay'),ev:val('ae'),k:val('ak'),st:val('as')};break;
+case'verify':{const a=S.ach.find(x=>x.id==id);if(!/EV-\d+/.test(a.evd)){msg='Cannot verify: no evidence reference attached.';break}a.st='verified';log('Achievement verified',id);break}
+case'rej':{S.ach.find(x=>x.id==id).st='rejected';log('Claim rejected',id);break}
+case'appr':S.notices.find(x=>x.id==id).st='approved';log('Notice approved',id);break;
+case'regi':{const e=S.ev.find(x=>x.id==id),n=val('rn'+id).trim();if(n.length<2){msg='Enter a student name.';break}if(e.reg>=e.cap){msg='Event is full.';break}if(e.names.includes(n.toLowerCase())){msg='Already registered.';break}e.names.push(n.toLowerCase());e.reg++;msg='OK: registered '+n;break}
+case'rep':{const e=S.ev.find(x=>x.id==id),t=val('rp'+id).trim();if(t.length<30){msg='Report needs at least 30 characters.';break}e.report=t;log('Event report',id);msg='OK: report saved';break}
+case'sub':{const t=val('wt').trim(),b=val('wb').trim();if(t.length<8||b.length<80){msg='Title (8+) and body (80+ characters) required.';break}let a=id&&g(id);if(a){a.t=t;a.body=b;a.cat=val('wc');a.photo=val('wp');a.st='review';a.hist.push({ts:S.today,by:'Aarav Mehta',act:'Resubmitted',note:'Revised after corrections'})}else{a={id:'ART-'+(100+S.A.length),t,cat:val('wc'),au:'Aarav Mehta',st:'review',d:S.today,views:5,photo:val('wp'),body:b,hist:[{ts:S.today,by:'Aarav Mehta',act:'Submitted',note:'To editorial queue'}],corr:[]};S.A.push(a)}log('Submitted',a.id);view='mine';break}
+case'chg':{const n=val('rv'+id).trim();if(!n){msg='A note is required to request corrections.';break}const a=g(id);a.st='changes';a.hist.push({ts:S.today,by:'Ms. Iyer',act:'Corrections requested',note:n});log('Corrections requested',id);break}
+case'rec':{const a=g(id);a.st='recommended';a.hist.push({ts:S.today,by:'Ms. Iyer',act:'Recommended',note:val('rv'+id)||'OK'});log('Recommended',id);break}
+case'rejA':{const n=val('rv'+id).trim();if(!n){msg='A reason is required to reject.';break}const a=g(id);a.st='rejected';a.hist.push({ts:S.today,by:'Ms. Iyer',act:'Rejected',note:n});log('Rejected',id);break}
+case'pubA':{const a=g(id);if(a.st!='recommended'){msg='Only recommended articles can be published.';break}if(a.photo!='granted'){msg='Blocked: student photo consent is not granted.';break}a.st='published';a.d=S.today;a.hist.push({ts:S.today,by:'Mr. Khanna',act:'Published',note:'Approved by publisher'});log('Published',id);msg='';break}
+case'corr':{const n=val('cn').trim();if(n.length<10){msg='Correction note needs 10+ characters.';break}const a=g(id);a.corr.push({ts:S.today,note:n});a.hist.push({ts:S.today,by:'Mr. Khanna',act:'Correction',note:n});log('Correction',id);break}
+}}catch(e){msg='Unexpected error: '+e.message}
+save();draw()}
+function draw(){const r=document.getElementById('role');if(!r.options.length)r.innerHTML=Object.entries(ROLES).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');r.value=role;
+const n=NAV();if(!n.some(x=>x[0]==view)&&view!='art')view='home';
+document.getElementById('nav').innerHTML=n.map(x=>`<button aria-current="${view==x[0]?'page':'false'}" onclick="go('${x[0]}')">${x[1]}</button>`).join('');
+document.getElementById('sd').textContent=S.today;
+document.getElementById('app').innerHTML=V[view]()+(view=='home'||view=='soon'?'':'')}
+document.getElementById('role').onchange=e=>{role=e.target.value;view='home';arg=null;draw()};
+draw();
+</script></body></html>
